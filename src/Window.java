@@ -1,12 +1,20 @@
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Window implements ActionListener {
+public class Window implements ActionListener, ChangeListener {
     JFrame window = new JFrame("interface GUI");
     JButton clear = new JButton("clear");
     JButton insert = new JButton("insert");
     JButton save = new JButton("save");
+    JButton min = new JButton("min");
+    JButton max = new JButton("max");
+    JButton average = new JButton("average");
+    JSlider sliderHorizontal = new JSlider(JSlider.HORIZONTAL,0,5,0);
+    JSlider sliderVertical = new JSlider(JSlider.VERTICAL,0,5,0);
+    JSlider source;
     JLabel textFieldLabel = new JLabel("Podaj wartość: ");
     JLabel textAreaLabel = new JLabel("Wynik działania to: ");
     JTable kek;
@@ -28,7 +36,7 @@ public class Window implements ActionListener {
         JButton left = new JButton("<--");
         JButton right = new JButton("-->");
         String [] columny = {"jeden","dwa","trzy","cztery","piec"};
-        Object[][] dane = {{"w1","w2","w5","w1","w1"},{"w3","w4","w6","w1","w1"},{"w7","w8","w9","w1","w1"},{"w7","w8","w9","w1","w1"},{"w7","w8","w9","w1","w1"}};
+        Object[][] dane = {{"1","2","5","1","1"},{"3","4","6","1","1"},{"7","8","9","1","1"},{"7","8","9","1","1"},{"7","8","9","1","1"}};
         kek = new JTable(dane,columny);
         kek.setRowHeight(40);
 
@@ -57,7 +65,10 @@ public class Window implements ActionListener {
         c.gridheight = 2;
         c.fill = GridBagConstraints.BOTH;
         setConstraints(0,0,2,1,0,0,0,0);
-        textArea.setEnabled(false);
+        textArea.setEditable(false);
+        Font font = new Font("Times New Roma",Font.PLAIN,16);
+        textArea.setForeground(Color.black);
+        textArea.setFont(font);
         panel.add(textArea,c);
 
         clear.addActionListener(this);
@@ -93,7 +104,23 @@ public class Window implements ActionListener {
         right.setActionCommand("-->");
         right.setToolTipText("ten tez");
         right.addActionListener(this);
+        sliderHorizontal.setName("hor");
+        sliderVertical.setName("ver");
+        sliderHorizontal.setMinorTickSpacing(1);
+        sliderHorizontal.setMajorTickSpacing(5);
+        sliderHorizontal.addChangeListener(this);
+        sliderVertical.addChangeListener(this);
+        sliderVertical.setMinorTickSpacing(1);
+        sliderVertical.setMajorTickSpacing(5);
+        toolBar.add(sliderVertical);
+        toolBar.add(sliderHorizontal);
         toolBar.add(left);
+        average.addActionListener(this);
+        min.addActionListener(this);
+        max.addActionListener(this);
+        toolBar.add(min);
+        toolBar.add(max);
+        toolBar.add(average);
         toolBar.add(right);
         window.setSize(1024,768);
         if(dimension.getWidth() <= window.getWidth() | dimension.getHeight() <= window.getHeight()){
@@ -111,7 +138,6 @@ public class Window implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String name = e.getActionCommand();
-        System.out.println(name);
         switch (name){
             case "<--":
                 System.out.println("lewoooo");
@@ -135,13 +161,55 @@ public class Window implements ActionListener {
                 }
                 break;
             case "insert":
+                int ver = sliderVertical.getValue();
+                int hor = sliderHorizontal.getValue();
+                textArea.setText((String)kek.getValueAt(hor,ver));
+                kek.setValueAt(textField.getText(),hor,ver);
+                break;
+            case "save":
+                break;
+            case "min":
+                int temp=0;
+                int tempk=0;
+                int min = 0;
                 for(int i = 0; i<kek.getRowCount();i++){
                     for(int j = 0; j<kek.getColumnCount();j++){
-                        kek.setValueAt(textField.getText(),i,j);
+                        temp = Integer.parseInt((String)kek.getValueAt(i,j));
+                        if(tempk<temp){
+                            min = tempk;
+                        }else {
+                            min = temp;
+                        }
+                        tempk = Integer.parseInt((String)kek.getValueAt(i,j));
+                        textArea.setText(Integer.toString(min));
                     }
                 }
                 break;
-            case "save":
+            case "max":
+                temp=0;
+                tempk=0;
+                int max = 0;
+                for(int i = 0; i<kek.getRowCount();i++){
+                    for(int j = 0; j<kek.getColumnCount();j++){
+                        temp = Integer.parseInt((String)kek.getValueAt(i,j));
+                        if(tempk>temp){
+                            max = tempk;
+                        }
+                        tempk = Integer.parseInt((String)kek.getValueAt(i,j));
+                        textArea.setText(Integer.toString(max));
+                    }
+                }
+                break;
+            case "average":
+                int sum = 0;
+                int dzielnik = 0;
+                for(int i = 0; i<kek.getRowCount();i++){
+                    for(int j = 0; j<kek.getColumnCount();j++){
+                        sum+=Integer.parseInt((String)kek.getValueAt(i,j));
+                        dzielnik++;
+                    }
+                    textArea.setText(Integer.toString(sum/dzielnik));
+                }
                 break;
         }
 
@@ -152,5 +220,19 @@ public class Window implements ActionListener {
         c.gridx = d; //ustawia pozycje x,y komorki w siatce
         c.gridy = e;
         c.insets = new Insets(f,g,h,o); //ustawia paddingi miedzy komorkami (gora,lewo,dol,prawo)
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        source = (JSlider)e.getSource();
+        System.out.println(source.getName());
+        int ver = 0;
+        int hor = 0;
+        if(source.getName().equals("ver")){
+            ver = source.getValue();
+        }else{
+            hor = source.getValue();
+        }
+        textArea.setText((String)kek.getValueAt(hor,ver));
     }
 }
