@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="l2fprod-common-totd">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Desktop/Projektowanie aplikacji/PA_Zadanie_2_ GUI-JAR/l2fprod-common-totd.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/Projektowanie aplikacji/PA_Zadanie_2_ GUI-JAR/l2fprod-common-outlookbar.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
