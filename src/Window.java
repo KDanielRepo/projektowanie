@@ -11,9 +11,9 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.stage.Stage;
+import org.apache.log4j.*;
 import org.freixas.jcalendar.DateEvent;
 import org.freixas.jcalendar.DateListener;
-import org.freixas.jcalendar.JCalendar;
 import org.freixas.jcalendar.JCalendarCombo;
 
 import javax.swing.*;
@@ -57,6 +57,7 @@ public class Window implements ActionListener, ChangeListener {
     JOutlookBar outlookBar = new JOutlookBar();
     JPanel calendarPanel = new JPanel();
     JCalendarCombo calendarCombo = new JCalendarCombo();
+    static Logger logger = Logger.getLogger("mylogger");
     int ver = 4;
     int hor = 0;
     List<String> names;
@@ -67,7 +68,6 @@ public class Window implements ActionListener, ChangeListener {
         createWindow();
         getValueList();
         getValues();
-        chart();
         tipOfTheDay.showDialog(window);
     }
 
@@ -236,6 +236,12 @@ public class Window implements ActionListener, ChangeListener {
         //zakładki
         tabbedPane.addTab("panel",null,panel);
         tabbedPane.addTab("chart",null,chart);
+        tabbedPane.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                chart();
+            }
+        });
         mainPanel.add(tabbedPane);
 
         //outlookbar
@@ -264,6 +270,17 @@ public class Window implements ActionListener, ChangeListener {
         window.add(status, BorderLayout.PAGE_END);
         window.setVisible(true);
 
+        BasicConfigurator.configure();
+        try{
+            FileAppender fileAppender = new FileAppender(new SimpleLayout(),"filelogs.log");
+            ConsoleAppender consoleAppender = new ConsoleAppender(new SimpleLayout());
+            logger.addAppender(fileAppender);
+            logger.addAppender(consoleAppender);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        logger.info("start");
+
     }
     public void chart() {
         Platform.runLater(new Runnable() {
@@ -284,7 +301,9 @@ public class Window implements ActionListener, ChangeListener {
                 chart.setScene(scene);
             }
         });
-
+        for(int i = 0; i<names.size();i++){
+            logger.info("nazwa: "+names.get(i)+", ilość: "+values.get(i));
+        }
     }
     public void getValueList() {
         names = new ArrayList<String>();
