@@ -22,6 +22,7 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -57,6 +58,7 @@ public class Window implements ActionListener, ChangeListener {
     JOutlookBar outlookBar = new JOutlookBar();
     JPanel calendarPanel = new JPanel();
     JCalendarCombo calendarCombo = new JCalendarCombo();
+    PatternLayout patternLayout = new PatternLayout("%-5p%d%F[%L]:%m%n");
     static Logger logger = Logger.getLogger("mylogger");
     int ver = 4;
     int hor = 0;
@@ -272,8 +274,8 @@ public class Window implements ActionListener, ChangeListener {
 
         BasicConfigurator.configure();
         try{
-            FileAppender fileAppender = new FileAppender(new SimpleLayout(),"filelogs.log");
-            ConsoleAppender consoleAppender = new ConsoleAppender(new SimpleLayout());
+            FileAppender fileAppender = new FileAppender(patternLayout,"filelogs.log");
+            ConsoleAppender consoleAppender = new ConsoleAppender(patternLayout);
             logger.addAppender(fileAppender);
             logger.addAppender(consoleAppender);
         }catch (IOException e){
