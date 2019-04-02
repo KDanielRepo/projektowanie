@@ -3,6 +3,7 @@ import com.l2fprod.common.swing.JTipOfTheDay;
 import com.l2fprod.common.swing.TipModel;
 import com.l2fprod.common.swing.tips.DefaultTip;
 import com.l2fprod.common.swing.tips.DefaultTipModel;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -65,6 +66,9 @@ public class Window implements ActionListener, ChangeListener {
     List<String> names;
     List<Double> values;
     GridBagConstraints c = new GridBagConstraints();
+    String[] columny = {"jeden", "dwa", "trzy", "cztery", "piec"};
+    Integer[][] dane = {{1,2,3,4,5},{1,2,3,4,5},{1,2,3,4,5},{1,2,3,4,5},{1,2,3,4,5}};
+    TableModel tableModel = new TableModel(dane,columny);
 
     public Window() {
         createWindow();
@@ -76,9 +80,7 @@ public class Window implements ActionListener, ChangeListener {
     public void createWindow() {
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         panel = new JPanel(new GridBagLayout());
-        String[] columny = {"jeden", "dwa", "trzy", "cztery", "piec"};
-        Object[][] dane = {{"3", "2", "5", "5", "5"}, {"3", "4", "6", "5", "5"}, {"7", "8", "9", "5", "5"}, {"7", "8", "9", "5", "5"}, {"7", "8", "9", "5", "10"}};
-        table = new JTable(dane, columny);
+        table = new JTable(tableModel);
         table.setRowHeight(40);
 
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -145,6 +147,7 @@ public class Window implements ActionListener, ChangeListener {
 
         setConstraints(0, 0, 3, 4, 0, 0, 0, 0);
         save.addActionListener(this);
+        panel.add(save, c);
 
         //Menu
         JMenuBar menuBar = new JMenuBar();
@@ -284,6 +287,38 @@ public class Window implements ActionListener, ChangeListener {
         logger.info("start");
 
     }
+
+/*    @Override
+    public void start(Stage stage) {
+        stage.setTitle("Pie Chart");
+        Scene scene = new Scene(new Group());
+        ObservableList<PieChart.Data> pieChartData =
+                FXCollections.observableArrayList();
+        for (int i = 0; i < names.size(); i++) {
+            pieChartData.add(new PieChart.Data(names.get(i),values.get(i)));
+        }
+        final PieChart pieChart = new PieChart(pieChartData);
+        pieChart.setTitle("Pie Chart");
+
+        ((Group) scene.getRoot()).getChildren().add(pieChart);
+        chart.setScene(scene);
+        for(int i = 0; i<names.size();i++){
+        logger.info("nazwa: "+names.get(i)+", ilość: "+values.get(i));
+        }
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException exc) {
+                throw new Error("Unexpected interruption", exc);
+            }
+            Platform.runLater(() -> System.out.println("hehe"));
+        });
+        thread.setDaemon(true);
+        thread.start();
+
+    }*/
+
+
     public void chart() {
         Platform.runLater(new Runnable() {
             @Override
@@ -311,7 +346,7 @@ public class Window implements ActionListener, ChangeListener {
         names = new ArrayList<String>();
         for (int i = 0; i < table.getRowCount(); i++) {
             for (int j = 0; j < table.getColumnCount(); j++) {
-                names.add((String) table.getValueAt(i, j));
+                names.add(Integer.toString((Integer)table.getValueAt(i, j)));
                 for (int k = names.size(); k >= 0; k--) {
                     if (k >= 2) {
                         if (names.get(names.size() - 1).equals(names.get(k - 2))) {
@@ -329,7 +364,7 @@ public class Window implements ActionListener, ChangeListener {
             Double number = 0.0;
             for (int i = 0; i < table.getRowCount(); i++) {
                 for (int j = 0; j < table.getColumnCount(); j++) {
-                    if (names.get(k).equals((String)table.getValueAt(i,j))){
+                    if (names.get(k).equals(Integer.toString((Integer)table.getValueAt(i,j)))){
                         number+=1;
                     }
                 }
@@ -357,25 +392,21 @@ public class Window implements ActionListener, ChangeListener {
                 Object[] wybor = {"Tak", "Nie"};
                 int choise = JOptionPane.showOptionDialog(window, "Czy na pewno chcesz wyczyścić całą tabelę?", "Pytanie", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, wybor, wybor[1]);
                 if (choise == 0) {
-                    for (int i = 0; i < table.getRowCount(); i++) {
-                        for (int j = 0; j < table.getColumnCount(); j++) {
-                            table.setValueAt(null, i, j);
-                        }
-                    }
+                    tableModel.clearTableValues();
                 } else if (choise == 1) {
                     return;
                 }
                 break;
             case "insert":
-                table.setValueAt(textField.getText(), ver, hor);
+                tableModel.insertIntoTable(ver,hor,Integer.parseInt(textField.getText()));
                 break;
             case "save":
                 try {
                     FileWriter fileWriter = new FileWriter("./test.txt", true);
                     BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-                    for (int i = 0; i < table.getRowCount(); i++) {
-                        for (int j = 0; j < table.getColumnCount(); j++) {
-                            bufferedWriter.write((String) table.getValueAt(i, j));
+                    for (int i = 0; i < tableModel.getRowCount(); i++) {
+                        for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                            bufferedWriter.write((Integer.toString((Integer) tableModel.getValueAt(i,j))));
                             bufferedWriter.write(" ");
                         }
                         bufferedWriter.newLine();
@@ -387,170 +418,32 @@ public class Window implements ActionListener, ChangeListener {
                 }
                 break;
             case "Minimum":
-                int temp = 0;
-                int tempk = 0;
-                int min = 0;
-                for (int i = 0; i < table.getRowCount(); i++) {
-                    for (int j = 0; j < table.getColumnCount(); j++) {
-                        try {
-                            temp = Integer.parseInt((String) table.getValueAt(i, j));
-                            if ((j + 1) < table.getColumnCount()) {
-                                tempk = Integer.parseInt((String) table.getValueAt(i, j + 1));
-                            }
-                            if (i == 0 & j == 0) {
-                                if (temp < tempk) {
-                                    min = temp;
-                                } else {
-                                    min = tempk;
-                                }
-                            }
-                            if (temp < min) {
-                                min = temp;
-                            } else if (tempk < min) {
-                                min = tempk;
-                            }
-                        } catch (NumberFormatException nfe) {
-                            textArea.setText("W tabeli nie znajdują się liczby lub są one niepoprawnie zapisane");
-                        }
-                    }
-                    textArea.setText(Integer.toString(min));
-                }
+                textArea.setText(Integer.toString((Integer) tableModel.showMinimum()));
                 break;
             case "Maximum":
-                temp = 0;
-                tempk = 0;
-                int max = 0;
-                for (int i = 0; i < table.getRowCount(); i++) {
-                    for (int j = 0; j < table.getColumnCount(); j++) {
-                        try {
-                            temp = Integer.parseInt((String) table.getValueAt(i, j));
-                            if ((j + 1) < table.getColumnCount()) {
-                                tempk = Integer.parseInt((String) table.getValueAt(i, j + 1));
-                            }
-                            if (temp > max) {
-                                max = temp;
-                            } else if (tempk > max) {
-                                max = tempk;
-                            }
-                        } catch (NumberFormatException nfe) {
-                            textArea.setText("W tabeli nie znajdują się liczby lub są one niepoprawnie zapisane");
-                        }
-                    }
-                    textArea.setText(Integer.toString(max));
-                }
+                textArea.setText(Integer.toString((Integer) tableModel.showMaximum()));
                 break;
             case "average":
-                int sum = 0;
-                int dzielnik = 0;
-                for (int i = 0; i < table.getRowCount(); i++) {
-                    for (int j = 0; j < table.getColumnCount(); j++) {
-                        try {
-                            sum += Integer.parseInt((String) table.getValueAt(i, j));
-                            dzielnik++;
-                        } catch (NumberFormatException | ArithmeticException nfe) {
-                            textArea.setText("W tabeli nie znajdują się liczby lub są one niepoprawnie zapisane");
-                        }
-                    }
-                    textArea.setText(Integer.toString(sum / dzielnik));
-                }
+                textArea.setText(Integer.toString((Integer) tableModel.showAverage()));
                 break;
             case "Sum":
-                sum = 0;
-                for (int i = 0; i < table.getRowCount(); i++) {
-                    for (int j = 0; j < table.getColumnCount(); j++) {
-                        try {
-                            sum += Integer.parseInt((String) table.getValueAt(i, j));
-                        } catch (NumberFormatException nfe) {
-                            textArea.setText("W tabeli nie znajdują się liczby lub są one niepoprawnie zapisane");
-                        }
-                    }
-                    textArea.setText(Integer.toString(sum));
-                }
+                textArea.setText(Integer.toString((Integer) tableModel.showSum()));
                 break;
             case "comboBoxChanged":
                 cbSource = (JComboBox) e.getSource();
                 String cb = (String) cbSource.getSelectedItem();
                 switch (cb) {
                     case "Min":
-                        temp = 0;
-                        tempk = 0;
-                        min = 0;
-                        for (int i = 0; i < table.getRowCount(); i++) {
-                            for (int j = 0; j < table.getColumnCount(); j++) {
-                                try {
-                                    temp = Integer.parseInt((String) table.getValueAt(i, j));
-                                    if ((j + 1) < table.getColumnCount()) {
-                                        tempk = Integer.parseInt((String) table.getValueAt(i, j + 1));
-                                    }
-                                    if (i == 0 & j == 0) {
-                                        if (temp < tempk) {
-                                            min = temp;
-                                        } else {
-                                            min = tempk;
-                                        }
-                                    }
-                                    if (temp < min) {
-                                        min = temp;
-                                    } else if (tempk < min) {
-                                        min = tempk;
-                                    }
-                                } catch (NumberFormatException nfe) {
-                                    textArea.setText("W tabeli nie znajdują się liczby lub są one niepoprawnie zapisane");
-                                }
-                            }
-                            textArea.setText(Integer.toString(min));
-                        }
+                        textArea.setText(Integer.toString((Integer) tableModel.showMinimum()));
                         break;
                     case "Max":
-                        temp = 0;
-                        tempk = 0;
-                        max = 0;
-                        for (int i = 0; i < table.getRowCount(); i++) {
-                            for (int j = 0; j < table.getColumnCount(); j++) {
-                                try {
-                                    temp = Integer.parseInt((String) table.getValueAt(i, j));
-                                    if ((j + 1) < table.getColumnCount()) {
-                                        tempk = Integer.parseInt((String) table.getValueAt(i, j + 1));
-                                    }
-                                    if (temp > max) {
-                                        max = temp;
-                                    } else if (tempk > max) {
-                                        max = tempk;
-                                    }
-                                } catch (NumberFormatException nfe) {
-                                    textArea.setText("W tabeli nie znajdują się liczby lub są one niepoprawnie zapisane");
-                                }
-                            }
-                            textArea.setText(Integer.toString(max));
-                        }
+                        textArea.setText(Integer.toString((Integer) tableModel.showMaximum()));
                         break;
                     case "Average":
-                        sum = 0;
-                        dzielnik = 0;
-                        for (int i = 0; i < table.getRowCount(); i++) {
-                            for (int j = 0; j < table.getColumnCount(); j++) {
-                                try {
-                                    sum += Integer.parseInt((String) table.getValueAt(i, j));
-                                    dzielnik++;
-                                } catch (NumberFormatException | ArithmeticException nfe) {
-                                    textArea.setText("W tabeli nie znajdują się liczby lub są one niepoprawnie zapisane");
-                                }
-                            }
-                            textArea.setText(Integer.toString(sum / dzielnik));
-                        }
+                        textArea.setText(Integer.toString((Integer) tableModel.showAverage()));
                         break;
                     case "Sum":
-                        sum = 0;
-                        for (int i = 0; i < table.getRowCount(); i++) {
-                            for (int j = 0; j < table.getColumnCount(); j++) {
-                                try {
-                                    sum += Integer.parseInt((String) table.getValueAt(i, j));
-                                } catch (NumberFormatException nfe) {
-                                    textArea.setText("W tabeli nie znajdują się liczby lub są one niepoprawnie zapisane");
-                                }
-                            }
-                            textArea.setText(Integer.toString(sum));
-                        }
+                        textArea.setText(Integer.toString((Integer) tableModel.showSum()));
                         break;
                 }
                 break;
