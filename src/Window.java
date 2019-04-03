@@ -1,9 +1,7 @@
 import com.l2fprod.common.swing.JOutlookBar;
 import com.l2fprod.common.swing.JTipOfTheDay;
-import com.l2fprod.common.swing.TipModel;
 import com.l2fprod.common.swing.tips.DefaultTip;
 import com.l2fprod.common.swing.tips.DefaultTipModel;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,7 +21,6 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -57,7 +54,6 @@ public class Window implements ActionListener, ChangeListener {
     JTextField textField = new JTextField();
     JTextArea textArea = new JTextArea();
     JOutlookBar outlookBar = new JOutlookBar();
-    JPanel calendarPanel = new JPanel();
     JCalendarCombo calendarCombo = new JCalendarCombo();
     PatternLayout patternLayout = new PatternLayout("%-5p%d%F[%L]:%m%n");
     static Logger logger = Logger.getLogger("mylogger");
@@ -259,14 +255,14 @@ public class Window implements ActionListener, ChangeListener {
 
         //Pasek Statusu
         status.setPreferredSize(new Dimension(window.getWidth(), 30));
-        JLabel statusLabel = new JLabel("Ależ ja kocham Kapibary");
+        JLabel statusLabel = new JLabel("Tutaj jest pasek statusu");
         status.add(statusLabel);
         status.setBackground(Color.lightGray);
 
         //Tips
         tipModel.add(new DefaultTip("1","Kapibary są fajne"));
         tipModel.add(new DefaultTip("2","I lubią pływać"));
-        tipModel.add(new DefaultTip("3","Są bardzo faj"));
+        tipModel.add(new DefaultTip("3","Są bardzo fajne"));
         tipModel.add(new DefaultTip("4","kapibara"));
 
         //Dodawanie do ramki

@@ -3,7 +3,8 @@ import javax.swing.table.AbstractTableModel;
 public class TableModel extends AbstractTableModel {
     private final int countRowTable = 5;
     private final int countColumnTable = 5;
-    private String[] colname = {"jeden", "dwa", "trzy", "cztery", "piec"};
+    private final int names = 5;
+    private String[] colname = new String[names];
     private Integer[][] data = new Integer[countRowTable][countColumnTable];
     public TableModel(){
         for (int i = 0; i<countRowTable;i++){
@@ -12,11 +13,11 @@ public class TableModel extends AbstractTableModel {
             }
         }
     }
-    public TableModel(Integer[][] a,String [] b){
-        this.colname = b;
+    public TableModel(Integer[][] a,String[] b){
         this.data = a;
+        this.colname = b;
     }
-
+    public String getColumnName(int column) { return colname[column].toString();}
     public void insertIntoTable(int a,int b,int c){
         data[a][b] = c;
         fireTableDataChanged();
