@@ -3,10 +3,15 @@ import javax.swing.*;
 public class Main {
 
     public static void main(String[] args) {
-        Window window = new Window();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Window window = new Window();
+            }
+        });
+        //launch(args);
         //Main main = new Main();
         //main.test();
-        //Flow flow = new Flow();
     }
     public void test(){
         JFrame testt = new JFrame();

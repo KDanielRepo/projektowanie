@@ -203,14 +203,14 @@ public class Window implements ActionListener, ChangeListener {
         toolBar.setLayout(new GridBagLayout());
         toolBar.setFloatable(false);
         String[] selection = {"Min", "Max", "Average", "Sum"};
-        JComboBox<String> jComboBox = new JComboBox<String>(selection);
+        JComboBox<String> jComboBox = new JComboBox<String>(new ComboBoxModel(selection));
         jComboBox.addActionListener(this);
 
         average.addActionListener(this);
         min.addActionListener(this);
         max.addActionListener(this);
-
         sum.addActionListener(this);
+
         toolBar.add(min);
         toolBar.addSeparator(new Dimension(10, 10));
         toolBar.add(max);
@@ -244,6 +244,8 @@ public class Window implements ActionListener, ChangeListener {
         tabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
+                getValueList();
+                getValues();
                 chart();
             }
         });
@@ -287,37 +289,6 @@ public class Window implements ActionListener, ChangeListener {
         logger.info("start");
 
     }
-
-/*    @Override
-    public void start(Stage stage) {
-        stage.setTitle("Pie Chart");
-        Scene scene = new Scene(new Group());
-        ObservableList<PieChart.Data> pieChartData =
-                FXCollections.observableArrayList();
-        for (int i = 0; i < names.size(); i++) {
-            pieChartData.add(new PieChart.Data(names.get(i),values.get(i)));
-        }
-        final PieChart pieChart = new PieChart(pieChartData);
-        pieChart.setTitle("Pie Chart");
-
-        ((Group) scene.getRoot()).getChildren().add(pieChart);
-        chart.setScene(scene);
-        for(int i = 0; i<names.size();i++){
-        logger.info("nazwa: "+names.get(i)+", ilość: "+values.get(i));
-        }
-        Thread thread = new Thread(() -> {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException exc) {
-                throw new Error("Unexpected interruption", exc);
-            }
-            Platform.runLater(() -> System.out.println("hehe"));
-        });
-        thread.setDaemon(true);
-        thread.start();
-
-    }*/
-
 
     public void chart() {
         Platform.runLater(new Runnable() {
