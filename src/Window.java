@@ -67,8 +67,9 @@ public class Window implements ActionListener, ChangeListener {
     List<Double> values;
     GridBagConstraints c = new GridBagConstraints();
     String[] columny = {"jeden", "dwa", "trzy", "cztery", "piec"};
-    Integer[][] dane = {{1,2,3,4,5},{1,2,3,4,5},{1,2,3,4,5},{1,2,3,4,5},{1,2,3,4,5}};
-    TableModel tableModel = new TableModel(dane,columny);
+    Integer[][] dane = {{1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}};
+    TableModel tableModel = new TableModel(dane, columny);
+    JFileChooser fileChooser = new JFileChooser();
 
     public Window() {
         createWindow();
@@ -239,8 +240,8 @@ public class Window implements ActionListener, ChangeListener {
         status.add(calendarCombo);
 
         //zakładki
-        tabbedPane.addTab("panel",null,panel);
-        tabbedPane.addTab("chart",null,chart);
+        tabbedPane.addTab("panel", null, panel);
+        tabbedPane.addTab("chart", null, chart);
         tabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -253,8 +254,8 @@ public class Window implements ActionListener, ChangeListener {
 
         //outlookbar
         JPanel testttt = new JPanel();
-        testttt.setPreferredSize(new Dimension(50,50));
-        outlookBar.addTab("one",null,testttt);
+        testttt.setPreferredSize(new Dimension(50, 50));
+        outlookBar.addTab("one", null, testttt);
         outlookBar.setVisible(true);
 
         //Pasek Statusu
@@ -264,13 +265,13 @@ public class Window implements ActionListener, ChangeListener {
         status.setBackground(Color.lightGray);
 
         //Tips
-        tipModel.add(new DefaultTip("1","Kapibary są fajne"));
-        tipModel.add(new DefaultTip("2","I lubią pływać"));
-        tipModel.add(new DefaultTip("3","Są bardzo faj"));
-        tipModel.add(new DefaultTip("4","kapibara"));
+        tipModel.add(new DefaultTip("1", "Kapibary są fajne"));
+        tipModel.add(new DefaultTip("2", "I lubią pływać"));
+        tipModel.add(new DefaultTip("3", "Są bardzo faj"));
+        tipModel.add(new DefaultTip("4", "kapibara"));
 
         //Dodawanie do ramki
-        window.add(outlookBar,BorderLayout.LINE_START);
+        window.add(outlookBar, BorderLayout.LINE_START);
         window.add(mainPanel);
         window.setJMenuBar(menuBar);
         window.add(toolBar, BorderLayout.PAGE_START);
@@ -278,12 +279,12 @@ public class Window implements ActionListener, ChangeListener {
         window.setVisible(true);
 
         BasicConfigurator.configure();
-        try{
-            FileAppender fileAppender = new FileAppender(patternLayout,"filelogs.log");
+        try {
+            FileAppender fileAppender = new FileAppender(patternLayout, "filelogs.log");
             ConsoleAppender consoleAppender = new ConsoleAppender(patternLayout);
             logger.addAppender(fileAppender);
             logger.addAppender(consoleAppender);
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         logger.info("start");
@@ -300,7 +301,7 @@ public class Window implements ActionListener, ChangeListener {
                 ObservableList<PieChart.Data> pieChartData =
                         FXCollections.observableArrayList();
                 for (int i = 0; i < names.size(); i++) {
-                    pieChartData.add(new PieChart.Data(names.get(i),values.get(i)));
+                    pieChartData.add(new PieChart.Data(names.get(i), values.get(i)));
                 }
                 final PieChart pieChart = new PieChart(pieChartData);
                 pieChart.setTitle("Pie Chart");
@@ -309,15 +310,16 @@ public class Window implements ActionListener, ChangeListener {
                 chart.setScene(scene);
             }
         });
-        for(int i = 0; i<names.size();i++){
-            logger.info("nazwa: "+names.get(i)+", ilość: "+values.get(i));
+        for (int i = 0; i < names.size(); i++) {
+            logger.info("nazwa: " + names.get(i) + ", ilość: " + values.get(i));
         }
     }
+
     public void getValueList() {
         names = new ArrayList<String>();
         for (int i = 0; i < table.getRowCount(); i++) {
             for (int j = 0; j < table.getColumnCount(); j++) {
-                names.add(Integer.toString((Integer)table.getValueAt(i, j)));
+                names.add(Integer.toString((Integer) table.getValueAt(i, j)));
                 for (int k = names.size(); k >= 0; k--) {
                     if (k >= 2) {
                         if (names.get(names.size() - 1).equals(names.get(k - 2))) {
@@ -329,20 +331,22 @@ public class Window implements ActionListener, ChangeListener {
             }
         }
     }
+
     public void getValues() {
         values = new ArrayList<Double>();
         for (int k = 0; k < names.size(); k++) {
             Double number = 0.0;
             for (int i = 0; i < table.getRowCount(); i++) {
                 for (int j = 0; j < table.getColumnCount(); j++) {
-                    if (names.get(k).equals(Integer.toString((Integer)table.getValueAt(i,j)))){
-                        number+=1;
+                    if (names.get(k).equals(Integer.toString((Integer) table.getValueAt(i, j)))) {
+                        number += 1;
                     }
                 }
             }
             values.add(number);
         }
     }
+
     public void setConstraints(int a, int b, int d, int e, int f, int g, int h, int o) {
         c.ipadx = a; //ustawia szerokosc
         c.ipady = b; //ustawia wysokosc
@@ -369,23 +373,31 @@ public class Window implements ActionListener, ChangeListener {
                 }
                 break;
             case "insert":
-                tableModel.insertIntoTable(ver,hor,Integer.parseInt(textField.getText()));
+                tableModel.insertIntoTable(ver, hor, Integer.parseInt(textField.getText()));
                 break;
             case "save":
-                try {
-                    FileWriter fileWriter = new FileWriter("./test.txt", true);
-                    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-                    for (int i = 0; i < tableModel.getRowCount(); i++) {
-                        for (int j = 0; j < tableModel.getColumnCount(); j++) {
-                            bufferedWriter.write((Integer.toString((Integer) tableModel.getValueAt(i,j))));
-                            bufferedWriter.write(" ");
+                File file = new File("./test.txt");
+                fileChooser.setCurrentDirectory(file);
+                fileChooser.setSelectedFile(file);
+                int fileChoise = fileChooser.showSaveDialog(window);
+                if (fileChoise == JFileChooser.APPROVE_OPTION) {
+                    try {
+                        FileWriter fileWriter = new FileWriter(fileChooser.getSelectedFile(), true);
+                        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                        for (int i = 0; i < tableModel.getRowCount(); i++) {
+                            for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                                bufferedWriter.write((Integer.toString((Integer) tableModel.getValueAt(i, j))));
+                                bufferedWriter.write(" ");
+                            }
+                            bufferedWriter.newLine();
                         }
-                        bufferedWriter.newLine();
+                        bufferedWriter.close();
+                    } catch (IOException | NumberFormatException ee) {
+                        ee.printStackTrace();
+                        textArea.setText("W tabeli nie znajdują się liczby lub są one niepoprawnie zapisane");
                     }
-                    bufferedWriter.close();
-                } catch (IOException | NumberFormatException ee) {
-                    ee.printStackTrace();
-                    textArea.setText("W tabeli nie znajdują się liczby lub są one niepoprawnie zapisane");
+                }else if(fileChoise == JFileChooser.CANCEL_OPTION){
+                    textArea.setText("Save Aborted");
                 }
                 break;
             case "Minimum":
@@ -422,6 +434,7 @@ public class Window implements ActionListener, ChangeListener {
 
 
     }
+
     @Override
     public void stateChanged(ChangeEvent e) {
         source = (JSlider) e.getSource();
