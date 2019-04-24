@@ -208,16 +208,24 @@ public class Window implements ActionListener, ChangeListener {
 
 
         //ToolBar
-        JToolBar toolBar = new JToolBar("takie se");
-        toolBar.setLayout(new GridBagLayout());
+        JToolBar toolBar = new JToolBar("toolBar");
         toolBar.setFloatable(false);
         String[] selection = {"Min", "Max", "Average", "Sum"};
         JComboBox<String> jComboBox = new JComboBox<String>(new ComboBoxModel(selection));
         jComboBox.addActionListener(this);
+        jComboBox.setMaximumSize(new Dimension(50,30));
 
         average.addActionListener(this);
+        ImageIcon averageIcon = new ImageIcon("./resources/avg.png");
+        average.setIcon(averageIcon);
         min.addActionListener(this);
+        ImageIcon minIcon = new ImageIcon("./resources/min.png");
+        min.setIcon(minIcon);
+        ImageIcon maxIcon = new ImageIcon("./resources/max.png");
         max.addActionListener(this);
+        max.setIcon(maxIcon);
+        ImageIcon sumIcon = new ImageIcon("./resources/sum.png");
+        sum.setIcon(sumIcon);
         sum.addActionListener(this);
 
         toolBar.add(min);
@@ -229,7 +237,8 @@ public class Window implements ActionListener, ChangeListener {
         toolBar.add(sum);
         toolBar.addSeparator(new Dimension(10, 10));
         toolBar.add(jComboBox);
-        toolBar.setPreferredSize(new Dimension(window.getWidth(), 30));
+        toolBar.addSeparator(new Dimension(400, 10));
+        toolBar.setPreferredSize(new Dimension(window.getWidth(), 64));
         toolBar.setBackground(Color.lightGray);
 
         window.setSize(800, 600);
@@ -360,8 +369,8 @@ public class Window implements ActionListener, ChangeListener {
     public void showAuthor(){
         JFrame jFrame = new JFrame("About Me");
         JPanel jPanel = new JPanel(new GridLayout(5,1));
-        JLabel apk = new JLabel("Aplikacja testowa");
-        JLabel ver = new JLabel("Nr. wersji: 1.0.0");
+        JLabel apk = new JLabel("Aplikacja zaliczeniowa");
+        JLabel ver = new JLabel("Nr. wersji: 0.9.0");
         JLabel lic = new JLabel("Licencja Freeware");
         JLabel me = new JLabel("Twórca: Daniel Kuć");
         JLabel con = new JLabel("Kontakt: Daniel200825@wp.pl");
@@ -394,17 +403,17 @@ public class Window implements ActionListener, ChangeListener {
         toolsHelp.add(lic);
         JPanel aboutHelp = new JPanel();
         aboutHelp.add(me);
-        tabbedPane.addTab("file", null,fileHelp);
-        tabbedPane.addTab("edit", null,editHelp);
-        tabbedPane.addTab("tools", null,toolsHelp);
-        tabbedPane.addTab("about", null,aboutHelp);
-        tabbedPane.addChangeListener(new ChangeListener() {
+        jTabbedPane.addTab("file", null,fileHelp);
+        jTabbedPane.addTab("edit", null,editHelp);
+        jTabbedPane.addTab("tools", null,toolsHelp);
+        jTabbedPane.addTab("about", null,aboutHelp);
+        jTabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
             }
         });
-        jFrame.add(jPanel);
         jPanel.add(jTabbedPane);
+        jFrame.add(jPanel);
         jFrame.setSize(300,300);
         jFrame.setLocation(((int) dimension.getWidth() / 2) - (window.getWidth() / 2), ((int) dimension.getHeight() / 2) - ((window.getWidth())) / 2);
         jFrame.setVisible(true);
